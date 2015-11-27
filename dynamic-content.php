@@ -28,6 +28,9 @@ if(!class_exists('Dynamic_Content'))
 			add_action( 'wp_ajax_nopriv_dc_get_content', array( &$this, 'dc_get_content' ) );
 			add_action( 'wp_ajax_dc_get_content', array( &$this, 'dc_get_content' ) );
 
+			add_action('admin_init', array(&$this, 'admin_init'));
+			add_action('admin_menu', array(&$this, 'add_menu'));
+
 			add_filter( 'the_content', array( &$this, 'scan_posts' ) );
 		}
 		
@@ -108,6 +111,47 @@ if(!class_exists('Dynamic_Content'))
 		}
 
 		/**
+		 * hook into WP's admin_init action hook
+		 */
+		public function admin_init()
+		{
+			// Set up the settings for this plugin
+			$this->init_settings();
+		}
+
+		/**
+		 * Initialize some custom settings
+		 */     
+		public function init_settings()
+		{
+			// register the settings for this plugin
+			register_setting('wp_dc_plugin-group', 'setting_a');
+			register_setting('wp_dc_plugin-group', 'setting_b');
+		}
+
+		/**
+		 * add a menu
+		 */     
+		public function add_menu()
+		{
+			add_options_page('Dynamic Content Settings', 'Dynamic Content', 'manage_options', 'wp_dc_plugin', array(&$this, 'plugin_settings_page'));
+		}
+
+		/**
+		 * Menu Callback
+		 */     
+		public function plugin_settings_page()
+		{
+			if(!current_user_can('manage_options'))
+			{
+				wp_die(__('You do not have sufficient permissions to access this page.'));
+			}
+
+			// Render the settings template
+			include(sprintf("%s/templates/settings.php", dirname(__FILE__)));
+		}
+
+		/**
                  * Activate the plugin
                  */
                 public static function activate()
@@ -133,5 +177,20 @@ if(class_exists('Dynamic_Content'))
     register_deactivation_hook(__FILE__, array('Dynamic_Content', 'deactivate'));
 
     // instantiate the plugin class
-    $wp_plugin_template = new Dynamic_Content();
+    $wp_dc_plugin = new Dynamic_Content();
+}
+
+// Add a link to the settings page onto the plugin page
+if(isset($wp_dc_plugin))
+{
+    // Add the settings link to the plugins page
+    function plugin_settings_link($links)
+    { 
+        $settings_link = '<a href="options-general.php?page=dynamic-content">Settings</a>'; 
+        array_unshift($links, $settings_link); 
+        return $links; 
+    }
+
+    $plugin = plugin_basename(__FILE__); 
+    add_filter("plugin_action_links_$plugin", 'plugin_settings_link');
 }
