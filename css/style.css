@@ -1,0 +1,14 @@
+#dc-box {
+	display: none;
+	width: 300px;
+	height: auto;
+	padding: 10px;
+	border: 1px solid black;
+	line-height: 1;
+	font-size: smaller;
+}
+
+.dc-item {
+	background-color: #ccc;
+	cursor: pointer;
+}
