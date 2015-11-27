@@ -15,11 +15,12 @@ Author URI: http://1000camels.com/
 if(!class_exists('Dynamic_Content'))
 {
 	class Dynamic_Content {
-
-		private $posttype = 'glossary';
+		
+		// default dynamic type
+		private $posttype = 'post';
 
 		public function __construct() 
-		{
+		{	
 			session_start();
 			session_unset();
 
@@ -27,6 +28,8 @@ if(!class_exists('Dynamic_Content'))
 
 			add_action( 'wp_ajax_nopriv_dc_get_content', array( &$this, 'dc_get_content' ) );
 			add_action( 'wp_ajax_dc_get_content', array( &$this, 'dc_get_content' ) );
+
+			$this->posttype = get_option('dc_content_type');
 
 			add_action('admin_init', array(&$this, 'admin_init'));
 			add_action('admin_menu', array(&$this, 'add_menu'));
@@ -125,7 +128,7 @@ if(!class_exists('Dynamic_Content'))
 		public function init_settings()
 		{
 			// register the settings for this plugin
-			register_setting('wp_dc_plugin-group', 'setting_a');
+			register_setting('wp_dc_plugin-group', 'dc_content_type');
 			register_setting('wp_dc_plugin-group', 'setting_b');
 		}
 
