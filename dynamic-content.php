@@ -46,7 +46,7 @@ if(!class_exists('Dynamic_Content'))
 
 			foreach( $_SESSION['items'] as $key => $item ) {
 				error_log('scanning for '.$item->post_title);
-				$content = preg_replace('/'.$item->post_title.'/', '<span class="dc-item">'.$item->post_title.'</span>', $content); 
+				$content = preg_replace('/'.preg_quote($item->post_title, '/').'/', '<span class="dc-item">'.$item->post_title.'</span>', $content); 
 			}
 
 			return $content;	
